@@ -72,12 +72,11 @@ app.use(
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
 
-      const allowedOrigins = [
-        process.env.ALLOWED_ORIGINS || "http://localhost:5173",
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://localhost:8080"
-      ].filter(Boolean);
+      const allowedOrigins = (
+        process.env.ALLOWED_ORIGINS || ""
+      )
+        .split(",")
+        .map(origin => origin.trim());
 
       if (allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
