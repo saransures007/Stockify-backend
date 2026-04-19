@@ -42,19 +42,21 @@ const getDashboardStats = async (req, res) => {
           },
           avgRetailMargin: {
             $avg: {
-              $divide: [
-                { $subtract: ["$sellingPrice", "$costPrice"] },
-                "$costPrice",
-              ],
-            },
+              $cond: [
+                { $eq: ["$costPrice", 0] },
+                null,                    // Skip this product in average
+                { $divide: [{ $subtract: ["$sellingPrice", "$costPrice"] }, "$costPrice"] }
+              ]
+            }
           },
           avgWholesaleMargin: {
             $avg: {
-              $divide: [
-                { $subtract: ["$wholesalePrice", "$costPrice"] },
-                "$costPrice",
-              ],
-            },
+              $cond: [
+                { $eq: ["$costPrice", 0] },
+                null,
+                { $divide: [{ $subtract: ["$wholesalePrice", "$costPrice"] }, "$costPrice"] }
+              ]
+            }
           },
         },
       },
@@ -186,7 +188,6 @@ const getProducts = async (req, res) => {
     // Build dynamic filter with user filtering
     const filter = {
       isActive: true,
-      createdBy: req.user._id, // Filter by current user
     };
 
     // Multi-field search

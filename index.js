@@ -54,7 +54,13 @@ const labelRoutes = require("./routes/labels");
 const reportRoutes = require("./routes/reports");
 const userRoutes = require("./routes/users");
 const returnRoutes = require("./routes/returns");
-
+const csvImportRoutes = require('./routes/csvImportRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
+const productCatalogRoutes = require('./routes/productCatalogRoutes');
+const petpoojaRoutes = require('./routes/petpoojaRoutes');
+const commonRoutes = require('./routes/commonRoutes');
+const aiRoutes = require('./routes/aiRoutes');
+const productRequestRoutes =  require('./routes/productRequestRoutes');
 // Middleware
 app.use(helmet());
 app.use(express.json({ limit: "1mb" }));
@@ -70,6 +76,7 @@ app.use(
         process.env.FRONTEND_URL || "http://localhost:5173",
         "http://localhost:5173",
         "http://localhost:5174",
+        "http://localhost:8080"
       ].filter(Boolean);
 
       if (allowedOrigins.indexOf(origin) !== -1) {
@@ -165,6 +172,18 @@ app.use("/api/labels", labelRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/returns", returnRoutes);
+app.use("/api/csv-import", csvImportRoutes);
+// Add after other routes
+app.use('/api/settings', settingsRoutes);
+
+app.use('/api/petpooja', petpoojaRoutes);
+app.use('/api/common', commonRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/product-request', productRequestRoutes);
+
+
+// Add after other routes
+app.use('/api/products', productCatalogRoutes);
 
 // Database connection and server startup
 const startServer = async () => {

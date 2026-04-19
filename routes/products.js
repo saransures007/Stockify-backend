@@ -45,7 +45,7 @@ const { uploadPDF, handleUploadError } = require("../middleware/uploadPDF");
 // =====================================================
 // MIDDLEWARE - All routes require authentication
 // =====================================================
-router.use(auth);
+// router.use(auth);
 
 // =====================================================
 // DASHBOARD & ANALYTICS ROUTES
@@ -57,7 +57,7 @@ router.use(auth);
  * Used by: Dashboard home page
  * Features: Stock alerts, pricing analysis, supplier stats
  */
-router.get("/dashboard-stats", getDashboardStats);
+router.get("/dashboard-stats",auth, getDashboardStats);
 
 // =====================================================
 // UTILITY ROUTES (Categories, Suppliers)
