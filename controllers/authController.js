@@ -2,6 +2,35 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/Users"); // Make sure this path is correct
 const { ok, fail } = require("../utils/responder");
+const { findOrCreateUser } = require("../services/authService");
+
+const Userslogin = async (req, res) => {
+  try {
+    const result = await findOrCreateUser(req.body);
+
+    if (result?.needsMobile) {
+      return res.json({
+        success: true,
+        data: {
+          needsMobile: true,
+          tempUser: result.tempUser
+        }
+      });
+    }
+
+    res.json({
+      success: true,
+      data: result
+    });
+
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 
 const registerUser = async (req, res) => {
   try {
@@ -92,4 +121,4 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+module.exports = { registerUser, loginUser,Userslogin };

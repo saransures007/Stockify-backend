@@ -8,7 +8,7 @@ const {
     generateLabels,
     generateLabelPDF
 } = require('../controllers/labelController');
-const auth = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
 
 // =====================================================
 // MIDDLEWARE - All routes require authentication

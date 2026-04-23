@@ -4,7 +4,7 @@ const router = express.Router();
 
 const settingsController = require('../controllers/settingsController');
 
-const auth = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
 
 // Main settings routes
 router.get('/',auth,settingsController.getSettings);

@@ -1,7 +1,30 @@
 const Category = require("../models/Category");
 const Product = require("../models/Product");
 const { ok, fail } = require("../utils/responder");
+const { findOrCreateUser } = require("../services/authService");
 
+const login = async (req, res) => {
+  try {
+    const userData = req.body;
+
+    const user = await findOrCreateUser(userData);
+
+    res.json({
+      success: true,
+      user
+    });
+
+  } catch (err) {
+    console.error("Auth error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
+};
+
+module.exports = { login };
 /**
  * GET ALL CATEGORIES
  * Purpose: Get all categories with product counts and dynamic popular categories

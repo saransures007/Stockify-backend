@@ -9,7 +9,7 @@ const {
   getSalesStats,
 } = require("../controllers/salesController");
 
-const auth = require("../middleware/auth");
+const { auth } = require('../middleware/auth');
 
 // All sales routes require authentication
 router.use(auth);

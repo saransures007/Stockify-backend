@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const { registerUser, loginUser } = require('../controllers/authController');
-const { validateRegister, validateLogin } = require('../middleware/validation');
-const auth = require('../middleware/auth');
+const { registerUser, loginUser,Userslogin } = require('../controllers/authController');
+const { validateRegister, validateLogin, usersValidateLogin } = require('../middleware/validation');
+const { auth } = require('../middleware/auth');
 const passport = require('../config/passport');
 
 
@@ -34,6 +34,7 @@ router.post('/register', (req, res, next) => {
 }, validateRegister, registerUser);
 
 router.post('/login', validateLogin, loginUser);
+router.post('/users-login', usersValidateLogin, Userslogin);
 
 // token varificaton
 router.get('/verify',auth, async (req, res) => {

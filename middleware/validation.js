@@ -22,8 +22,37 @@ const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
+const userloginSchema = Joi.object({
+  name: Joi.string().optional(),
+
+  email: Joi.string().email().required(),
+
+  mobile: Joi.string().pattern(/^[6-9]\d{9}$/).optional(),
+
+  image: Joi.string().allow(null, "").optional(),
+
+  provider: Joi.string().valid("google", "apple").required(),
+
+  providerId: Joi.string().required()
+});
+
+
+
 const validateLogin = (req, res, next) => {
   const { error } = loginSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message,
+    });
+  }
+  next();
+};
+
+
+
+const usersValidateLogin = (req, res, next) => {
+  const { error } = userloginSchema.validate(req.body);
   if (error) {
     return res.status(400).json({
       success: false,
@@ -121,6 +150,7 @@ const validateReturn = (req, res, next) => {
 module.exports = {
   validateRegister,
   validateLogin,
+  usersValidateLogin,
   validateProduct,
   validateReturn,
 };

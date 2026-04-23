@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const returnController = require("../controllers/returnController");
-const auth = require("../middleware/auth");
+const { auth } = require('../middleware/auth');
 const { validateReturn } = require("../middleware/validation");
 
 // Apply authentication middleware to all routes

@@ -15,12 +15,69 @@ const customerSchema = new mongoose.Schema(
         date: Date,
       },
     ],
+      image: String,
+
+  provider: {
+    type: String,
+    enum: ["email", "google", "apple"],
+    default: "email"
+  },
+
+  providerId: String,
+
+  // 🔥 Petpooja mapping
+  petpoojaPartyId: Number,
+  partyCode: String,
+
+  // 🔥 Loyalty
+  loyaltyPoints: {
+    type: Number,
+    default: 0
+  },
+
+  // metadata
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+
+  preferences: {
+    emailNotifications: {
+      type: Boolean,
+      default: true
+    },
+    smsNotifications: {
+      type: Boolean,
+      default: false
+    },
+    darkMode: {
+      type: Boolean,
+      default: false
+    },
+    language: {
+      type: String,
+      default: 'English'
+    },
+    currency: {
+      type: String,
+      default: 'INR'
+    }
+  },
+          lastlogin: {
+            type: Date,
+            default: null
+        },
+lastActiveAt: {
+  type: Date,
+  default: null
+},
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
   },
+
+  
   { timestamps: true }
 );
 

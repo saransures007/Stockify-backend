@@ -1,5 +1,28 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/Users');
+const admin = require("../config/firebaseAdmin");
+
+const authcustomerMiddleware = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    console.log("🔐 Verifying token:", token);
+    if (!token) {
+      return res.status(401).json({ message: "No token" });
+    }
+
+    const decoded = await admin.auth().verifyIdToken(token);
+
+    req.user = {
+      uid: decoded.uid,
+      email: decoded.email,
+    };
+
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+};
 
 const auth = async (req, res, next) => {
     try {
@@ -33,4 +56,5 @@ const auth = async (req, res, next) => {
     }
 };
 
-module.exports = auth;
+
+module.exports ={authcustomerMiddleware,auth};

@@ -6,7 +6,7 @@ const {
   getTaxReport,
 } = require("../controllers/reportController");
 
-const auth = require("../middleware/auth");
+const { auth } = require('../middleware/auth');
 
 // All report routes require authentication
 router.use(auth);

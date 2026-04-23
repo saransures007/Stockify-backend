@@ -1,7 +1,7 @@
 // routes/csvImportRoutes.js
 const express = require('express');
 const multer = require('multer');
-const auth = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
 const csvImportController = require('../controllers/csvImportController');
 
 const router = express.Router();

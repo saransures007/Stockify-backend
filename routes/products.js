@@ -39,7 +39,7 @@ const {
 } = require("../controllers/productController");
 
 const { validateProduct } = require("../middleware/validation");
-const auth = require("../middleware/auth");
+const { auth } = require('../middleware/auth');
 const { uploadPDF, handleUploadError } = require("../middleware/uploadPDF");
 
 // =====================================================

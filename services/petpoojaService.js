@@ -196,7 +196,81 @@ async getMasterData() {
   return response.data;
 }
 
+// 🔍 Search Party (Customer)
+async findParty({ name, mobile }) {
+  await this._ensureAuth();
 
+  const response = await this.client.get('/parties', {
+    params: {
+      page: 1,
+      per_page: 10,
+      sort_by: 'createdAt',
+      sort_order: 'desc',
+      filter_by: 'both',
+      status: 'all',
+      name,
+      mobile
+    }
+  });
+
+  const parties = response.data?.data || [];
+
+  // 🔥 strict match (VERY IMPORTANT)
+  return parties.find(p => p.mobile === mobile) || null;
+}
+
+// 🔍 Get Party by ID
+async getPartyById(partyId) {
+  await this._ensureAuth();
+
+  try {
+    const response = await this.client.get(`/parties/${partyId}`);
+    console.log("getPartyById response:", response.data);
+
+    return response.data?.data || response.data;
+  } catch (err) {
+    console.log("❌ getPartyById error:", err.response?.data || err.message);
+    return null;
+  }
+}
+async findPartyByMobile(mobile) {
+  await this._ensureAuth();
+
+  try {
+    const response = await this.client.get("/parties", {
+      params: {
+        page: 1,
+        per_page: 10,
+        sort_by: "createdAt",
+        sort_order: "desc",
+        filter_by: "both",
+        status: "all",
+        mobile,
+      },
+    });
+
+    const parties = response.data?.data || [];
+
+    // 🔥 exact match filter
+    const party = parties.find(p => p.mobile === mobile);
+
+    return party || null;
+
+  } catch (err) {
+    console.log("❌ findPartyByMobile error:", err.message);
+    return null;
+  }
+}
+// ➕ Create Party
+async createParty(payload) {
+  await this._ensureAuth();
+
+  
+
+  const response = await this.client.post('/parties', payload);
+
+  return response.data;
+}
  
 
 }

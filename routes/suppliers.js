@@ -10,7 +10,7 @@ const {
   searchSuppliers,
 } = require("../controllers/supplierController");
 
-const auth = require("../middleware/auth");
+const { auth } = require('../middleware/auth');
 
 // All supplier routes require authentication
 router.use(auth);
