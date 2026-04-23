@@ -33,7 +33,9 @@ const userloginSchema = Joi.object({
 
   provider: Joi.string().valid("google", "apple").required(),
 
-  providerId: Joi.string().required()
+  providerId: Joi.string().required(),
+
+  whatsappOptIn: Joi.boolean().optional()
 });
 
 

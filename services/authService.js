@@ -42,7 +42,8 @@ const findOrCreateUser = async (userData) => {
           email: userData.email,
           image: userData.image,
           provider: userData.provider,
-          providerId: userData.providerId
+          providerId: userData.providerId,
+          whatsappOptIn: userData.whatsappOptIn
         }
       };
     }
@@ -96,6 +97,7 @@ const findOrCreateUser = async (userData) => {
       image: userData.image || null,
       provider: userData.provider,
       providerId: userData.providerId,
+      whatsappOptIn:userData.whatsappOptIn,
 
       loyaltyPoints: 0,
     });
