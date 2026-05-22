@@ -261,6 +261,73 @@ async findPartyByMobile(mobile) {
     return null;
   }
 }
+
+// 🎁 Get Loyalty Transactions
+async getLoyaltyTransactions(partyId, page = 1, perPage = 50) {
+  await this._ensureAuth();
+
+  try {
+    const response = await this.client.get(
+      `/loyalty/parties/${partyId}/transactions`,
+      {
+        params: {
+          page,
+          per_page: perPage,
+        },
+      }
+    );
+
+    return response.data;
+
+  } catch (err) {
+
+    console.log(
+      "❌ getLoyaltyTransactions error:",
+      err.response?.data || err.message
+    );
+
+    return null;
+  }
+}
+// 🎁 Get Loyalty By Mobile
+async getLoyaltyByMobile(mobile) {
+  await this._ensureAuth();
+
+  try {
+
+    const response = await this.client.get(
+      `/loyalty/parties`,
+      {
+        params: {
+          page: 1,
+          per_page: 1,
+          sort_by: "totalPoints",
+          sort_order: "asc",
+          status: "all",
+          search_by: "global",
+          query: mobile,
+        },
+      }
+    );
+
+    const parties = response.data?.data || [];
+
+    // exact mobile match
+    return parties.find(
+      p => p.mobile === mobile
+    ) || null;
+
+  } catch (err) {
+
+    console.log(
+      "❌ getLoyaltyByMobile error:",
+      err.response?.data || err.message
+    );
+
+    return null;
+  }
+}
+
 // ➕ Create Party
 async createParty(payload) {
   await this._ensureAuth();
