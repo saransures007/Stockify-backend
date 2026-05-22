@@ -2,69 +2,6 @@ const Customer = require("../models/Customer");
 const { ok, fail } = require("../utils/responder");
 const petpooja = require("../services/petpoojaService");
 
-// const getMyProfile = async (req, res) => {
-//   try {
-//     console.log("Fetching profile for user:", req.user);
-//     const { email, uid } = req.user;
-
-//     let customer = await Customer.findOne({
-//       $or: [
-//         { email },
-//         { providerId: uid } // 🔥 safer
-//       ]
-//     });
-//     if (!customer) {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-
-//     // 🔥 Always update activity
-//     customer.lastActiveAt = new Date();
-
-//     console.log("Customer found:", customer);
-//     // 🔥 Sync with Petpooja
-//     if (customer.petpoojaPartyId) {
-//       try {
-//         const party = await petpooja.findPartyByMobile(customer.phone);
-//        console.log("Customer   found in petpoja:", party);
-//         if (!party) {
-//               console.log("Customer not  found in petpoja:", customer);
-//           // ⚠️ Instead of delete → deactivate
-//           customer.isActive = false;
-//           await customer.save();
-
-//           return res.status(403).json({
-//             success: false,
-//             message: "Account no longer exists"
-//           });
-//         }
-
-//         // ✅ Sync fields
-//         customer.name = party.name || customer.name;
-//         customer.email = party.email || customer.email;
-//         customer.phone = party.mobile || customer.phone;
-
-//         customer.loyaltyPoints =
-//           party.loyaltyPoints ?? customer.loyaltyPoints;
-
-//         customer.isActive = true;
-//       } catch (err) {
-//         console.log("Petpooja error:", err.message);
-//         // ⚠️ Do NOT break user experience
-//       }
-//     }
-
-//     await customer.save();
-
-//     return res.json({
-//       success: true,
-//       data: customer
-//     });
-
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ success: false });
-//   }
-// };
 const getMyProfile = async (req, res) => {
   try {
     console.log("Fetching profile for user:", req.user);
@@ -125,6 +62,15 @@ const getMyProfile = async (req, res) => {
             customer.petpoojaPartyId
           );
 
+      // 📊 Full analytics/profile
+       partyDetails =
+        await petpooja.getPartyById(
+          customer.petpoojaPartyId
+        );
+
+
+
+
         loyaltyTransactions =
           transactionsResponse?.data || [];
 
@@ -152,7 +98,21 @@ const getMyProfile = async (req, res) => {
       data: {
         ...customer.toObject(),
 
-        loyaltyTransactions
+        loyaltyTransactions,
+        analytics:
+          partyDetails?.analytics || null,
+
+        receivable:
+          partyDetails?.receivable || 0,
+
+        payable:
+          partyDetails?.payable || 0,
+
+        preferredPaymentMethod:
+          partyDetails?.analytics?.preferredPaymentMethod,
+
+        mostlyBoughtItems:
+          partyDetails?.analytics?.mostlyBoughtItems || []
       }
     });
 
