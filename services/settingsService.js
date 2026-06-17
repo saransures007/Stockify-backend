@@ -16,39 +16,68 @@ exports.getStoreStatus = async () => {
     };
   }
 
+  const storeStatus = settings.storeStatus;
+
   const {
-    openingTime,
-    closingTime,
-    holidayMode,
-    temporaryCloseReason,
-    lastStatusChange
-  } = settings.storeStatus;
+    isOpen: manualStatus = false,
+    openingTime = "09:00",
+    closingTime = "21:00",
+    holidayMode = false,
+    temporaryCloseReason = "",
+    lastStatusChange = null
+  } = storeStatus;
 
-  let isOpen = false;
+  // Current IST Time
+  const istNow = new Date(
+    new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata"
+    })
+  );
 
-  if (!holidayMode) {
-    const now = new Date();
+  const currentMinutes =
+    istNow.getHours() * 60 +
+    istNow.getMinutes();
 
-    const currentMinutes =
-      now.getHours() * 60 + now.getMinutes();
+  const [openHour, openMinute] =
+    openingTime.split(":").map(Number);
 
-    const [oh, om] = openingTime.split(":").map(Number);
-    const [ch, cm] = closingTime.split(":").map(Number);
+  const [closeHour, closeMinute] =
+    closingTime.split(":").map(Number);
 
-    const openMinutes = oh * 60 + om;
-    const closeMinutes = ch * 60 + cm;
+  const openMinutes =
+    openHour * 60 + openMinute;
 
-    isOpen =
-      currentMinutes >= openMinutes &&
-      currentMinutes < closeMinutes;
+  const closeMinutes =
+    closeHour * 60 + closeMinute;
+
+  const isWithinBusinessHours =
+    currentMinutes >= openMinutes &&
+    currentMinutes < closeMinutes;
+
+  let finalStatus = false;
+
+  // Holiday mode always closed
+  if (holidayMode) {
+    finalStatus = false;
+  } else {
+    // Manual switch + business hours
+    finalStatus =
+      manualStatus && isWithinBusinessHours;
   }
 
   return {
-    isOpen,
+    isOpen: finalStatus,
+    manualStatus,
+    isWithinBusinessHours,
     openingTime,
     closingTime,
     holidayMode,
     temporaryCloseReason,
-    lastStatusChange
+    lastStatusChange,
+    currentTime: istNow.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    })
   };
 };
