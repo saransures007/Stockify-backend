@@ -121,53 +121,82 @@ const updateGeneralSettings = async (req, res) => {
  * Update store status (open/close)
  */
 const updateStoreStatus = async (req, res) => {
-    try {
-        const { isOpen, reason } = req.body;
-        
-        const settings = await Settings.findOne({ createdBy: req.user._id });
-        
-        if (!settings) {
-            return fail(res, null, 'Settings not found');
-        }
-        
-        // Add to history
-        const historyEntry = {
-            status: isOpen,
-            reason: reason || (isOpen ? 'Store opened' : 'Store closed'),
-            changedAt: new Date(),
-            changedBy: req.user._id
-        };
-        
-        settings.storeStatus.statusHistory.unshift(historyEntry);
-        
-        // Keep only last 50 entries
-        if (settings.storeStatus.statusHistory.length > 50) {
-            settings.storeStatus.statusHistory = settings.storeStatus.statusHistory.slice(0, 50);
-        }
-        
-        settings.storeStatus.isOpen = isOpen;
-        settings.storeStatus.lastStatusChange = new Date();
-        settings.storeStatus.temporaryCloseReason = isOpen ? '' : (reason || '');
-        settings.updatedBy = req.user._id;
-        
-        await settings.save();
-        
-        // Emit socket event for real-time updates
-        const io = req.app.get('io');
-        if (io) {
-            io.emit('storeStatusChanged', {
-                isOpen,
-                reason: reason || (isOpen ? 'Store opened' : 'Store closed'),
-                changedAt: new Date(),
-                changedBy: req.user.name
-            });
-        }
-        
-        return ok(res, settings.storeStatus, 'Store status updated successfully');
-    } catch (error) {
-        console.error('Update store status error:', error);
-        return fail(res, error, 'Failed to update store status');
+  try {
+    const {
+      isOpen,
+      openingTime,
+      closingTime,
+      holidayMode,
+      temporaryCloseReason
+    } = req.body;
+
+    const settings = await Settings.findOne({
+      createdBy: req.user._id
+    });
+
+    if (!settings) {
+      return fail(res, null, "Settings not found");
     }
+
+    if (!settings.storeStatus) {
+      settings.storeStatus = {};
+    }
+
+    if (!Array.isArray(settings.storeStatus.statusHistory)) {
+      settings.storeStatus.statusHistory = [];
+    }
+
+    settings.storeStatus.statusHistory.unshift({
+      status: isOpen,
+      reason:
+        temporaryCloseReason ||
+        (isOpen ? "Store opened" : "Store closed"),
+      changedAt: new Date(),
+      changedBy: req.user._id
+    });
+
+    if (settings.storeStatus.statusHistory.length > 50) {
+      settings.storeStatus.statusHistory =
+        settings.storeStatus.statusHistory.slice(0, 50);
+    }
+
+    settings.storeStatus.isOpen = isOpen;
+    settings.storeStatus.openingTime =
+      openingTime || settings.storeStatus.openingTime;
+
+    settings.storeStatus.closingTime =
+      closingTime || settings.storeStatus.closingTime;
+
+    settings.storeStatus.holidayMode =
+      holidayMode ?? settings.storeStatus.holidayMode;
+
+    settings.storeStatus.temporaryCloseReason =
+      temporaryCloseReason || "";
+
+    settings.storeStatus.lastStatusChange =
+      new Date();
+
+    settings.updatedBy = req.user._id;
+
+    await settings.save();
+
+    return ok(
+      res,
+      settings.storeStatus,
+      "Store status updated successfully"
+    );
+  } catch (error) {
+    console.error(
+      "Update store status error:",
+      error
+    );
+
+    return fail(
+      res,
+      error,
+      "Failed to update store status"
+    );
+  }
 };
 
 /**

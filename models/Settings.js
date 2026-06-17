@@ -14,20 +14,56 @@ const settingsSchema = new mongoose.Schema({
     },
     
     // Store Status
-    storeStatus: {
-        isOpen: { type: Boolean, default: true },
-        openingTime: { type: String, default: '09:00' },
-        closingTime: { type: String, default: '21:00' },
-        holidayMode: { type: Boolean, default: false },
-        temporaryCloseReason: { type: String, default: '' },
-        lastStatusChange: { type: Date, default: Date.now },
-        statusHistory: [{
-            status: { type: Boolean, required: true },
-            reason: { type: String },
-            changedAt: { type: Date, default: Date.now },
-            changedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
-        }]
-    },
+storeStatus: {
+  autoMode: {
+    type: Boolean,
+    default: true
+  },
+
+  manualStatus: {
+    type: Boolean,
+    default: true
+  },
+
+  openingTime: {
+    type: String,
+    default: "09:00"
+  },
+
+  closingTime: {
+    type: String,
+    default: "21:00"
+  },
+
+  weeklyOffDays: [{
+    type: String
+  }],
+
+  holidayMode: {
+    type: Boolean,
+    default: false
+  },
+
+  holidayMessage: {
+    type: String,
+    default: ""
+  },
+
+  temporaryCloseReason: {
+    type: String,
+    default: ""
+  },
+
+  allowOrdersAfterClosing: {
+    type: Boolean,
+    default: false
+  },
+
+  lastStatusChange: {
+    type: Date,
+    default: Date.now
+  }
+},
     
     // Notification Settings
     notifications: {
