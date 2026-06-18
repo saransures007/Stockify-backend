@@ -16,18 +16,15 @@ exports.getStoreStatus = async () => {
     };
   }
 
-  const storeStatus = settings.storeStatus;
-
   const {
-    isOpen: manualStatus = false,
     openingTime = "09:00",
     closingTime = "21:00",
     holidayMode = false,
     temporaryCloseReason = "",
     lastStatusChange = null
-  } = storeStatus;
+  } = settings.storeStatus;
 
-  // Current IST Time
+  // IST Time
   const istNow = new Date(
     new Date().toLocaleString("en-US", {
       timeZone: "Asia/Kolkata"
@@ -50,25 +47,16 @@ exports.getStoreStatus = async () => {
   const closeMinutes =
     closeHour * 60 + closeMinute;
 
-  const isWithinBusinessHours =
-    currentMinutes >= openMinutes &&
-    currentMinutes < closeMinutes;
+  let isOpen = false;
 
-  let finalStatus = false;
-
-  // Holiday mode always closed
-  if (holidayMode) {
-    finalStatus = false;
-  } else {
-    // Manual switch + business hours
-    finalStatus =
-      manualStatus && isWithinBusinessHours;
+  if (!holidayMode) {
+    isOpen =
+      currentMinutes >= openMinutes &&
+      currentMinutes < closeMinutes;
   }
 
   return {
-    isOpen: finalStatus,
-    manualStatus,
-    isWithinBusinessHours,
+    isOpen,
     openingTime,
     closingTime,
     holidayMode,
