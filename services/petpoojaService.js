@@ -196,6 +196,200 @@ async getMasterData() {
   return response.data;
 }
 
+
+
+// ============================================================
+// GET SUPPLIERS
+// ============================================================
+async getSuppliers(
+  page = 1,
+  perPage = 100
+) {
+  await this._ensureAuth();
+
+  const response = await this.client.get(
+    "/parties",
+    {
+      params: {
+        page,
+        per_page: perPage,
+        sort_by: "createdAt",
+        sort_order: "desc",
+        filter_by: "supplier",
+        status: "all",
+      },
+    }
+  );
+
+  return response.data;
+}
+// ============================================================
+// UPDATE STOCK ADJUSTMENT
+// PUT /api/v1/items/stock-adjustments/:id
+// ============================================================
+async updateStockAdjustment(
+  stockAdjustmentId,
+  payload
+) {
+  await this._ensureAuth();
+
+  if (!stockAdjustmentId) {
+    throw new Error(
+      "Stock adjustment ID is required"
+    );
+  }
+
+  if (!payload) {
+    throw new Error(
+      "Stock adjustment payload is required"
+    );
+  }
+
+  if (
+    !Array.isArray(
+      payload.lineItems
+    )
+  ) {
+    throw new Error(
+      "lineItems must be an array"
+    );
+  }
+
+  console.log(
+    "[Petpooja] Updating stock adjustment:",
+    stockAdjustmentId
+  );
+
+  console.log(
+    "[Petpooja] Stock adjustment payload:",
+    JSON.stringify(
+      payload,
+      null,
+      2
+    )
+  );
+
+  try {
+
+    const response =
+      await this.client.put(
+        `/items/stock-adjustments/${stockAdjustmentId}`,
+        payload
+      );
+
+    console.log(
+      "[Petpooja] Stock adjustment updated:",
+      response.status
+    );
+
+    return response.data;
+
+  } catch (error) {
+
+    console.error(
+      "[Petpooja] Stock adjustment failed:",
+      error?.response?.data ||
+        error?.message
+    );
+
+    throw error;
+  }
+}
+
+
+// ============================================================
+// CREATE PETPOOJA ITEM
+// POST /api/v1/items
+// ============================================================
+async createItem(payload) {
+  await this._ensureAuth();
+
+  console.log(
+    "[Petpooja] Creating item:",
+    JSON.stringify(payload, null, 2)
+  );
+
+  try {
+    const response = await this.client.post(
+      "/items",
+      payload
+    );
+
+    console.log(
+      "[Petpooja] Item created:",
+      response.status,
+      response.data
+    );
+
+    return response.data;
+
+  } catch (error) {
+    console.error(
+      "[Petpooja] Create item failed:",
+      error?.response?.data ||
+      error?.message
+    );
+
+    throw error;
+  }
+}
+
+async updateItem(itemId, payload) {
+  await this._ensureAuth();
+
+  const response = await this.client.put(
+    `/items/${itemId}`,
+    payload
+  );
+
+  return response.data;
+}
+
+// ============================================================
+// GET STOCK ADJUSTMENT VOUCHER INIT
+//
+// GET /api/v1/voucher-init?voucher_type=stockAdjustment
+//
+// Used to get:
+// - voucherAutoSeriesId
+// - nextNumber
+// ============================================================
+
+async getStockAdjustmentVoucherInit() {
+  await this._ensureAuth();
+
+  try {
+    const response = await this.client.get(
+      "/voucher-init",
+      {
+        params: {
+          voucher_type: "stockAdjustment",
+        },
+      }
+    );
+
+    console.log(
+      "[Petpooja] Stock adjustment voucher init:",
+      JSON.stringify(
+        response.data,
+        null,
+        2
+      )
+    );
+
+    return response.data;
+
+  } catch (error) {
+    console.error(
+      "[Petpooja] Stock adjustment voucher init failed:",
+      error?.response?.data ||
+      error?.message
+    );
+
+    throw error;
+  }
+}
+
 // 🔍 Search Party (Customer)
 async findParty({ name, mobile }) {
   await this._ensureAuth();
@@ -326,6 +520,339 @@ async getLoyaltyByMobile(mobile) {
 
     return null;
   }
+}
+
+// ============================================================
+// CREATE PURCHASE BILL
+//
+// POST /api/v1/bills
+// ============================================================
+
+async createPurchaseBill(payload) {
+  await this._ensureAuth();
+
+  if (!payload) {
+    throw new Error(
+      "Purchase bill payload is required"
+    );
+  }
+
+  if (
+    !Array.isArray(payload.lineItems) ||
+    payload.lineItems.length === 0
+  ) {
+    throw new Error(
+      "Purchase bill lineItems are required"
+    );
+  }
+
+  try {
+
+    console.log(
+      "[Petpooja] Creating purchase bill:"
+    );
+
+    console.log(
+      JSON.stringify(
+        payload,
+        null,
+        2
+      )
+    );
+
+    const response =
+      await this.client.post(
+        "/bills",
+        payload
+      );
+
+    console.log(
+      "[Petpooja] Purchase bill created:",
+      JSON.stringify(
+        response.data,
+        null,
+        2
+      )
+    );
+
+    return response.data;
+
+  } catch (error) {
+
+    console.error(
+      "[Petpooja] Create purchase bill failed:",
+      error?.response?.data ||
+      error?.message
+    );
+
+    throw error;
+  }
+}
+
+// ============================================================
+// CREATE STOCK ADJUSTMENT
+//
+// POST /api/v1/items/stock-adjustments
+// ============================================================
+
+async createStockAdjustment(payload) {
+  await this._ensureAuth();
+
+  if (!payload) {
+    throw new Error(
+      "Stock adjustment payload is required"
+    );
+  }
+
+  if (
+    !Array.isArray(
+      payload.lineItems
+    ) ||
+    payload.lineItems.length === 0
+  ) {
+    throw new Error(
+      "Stock adjustment lineItems are required"
+    );
+  }
+
+  try {
+    console.log(
+      "[Petpooja] Creating stock adjustment:"
+    );
+
+    console.log(
+      JSON.stringify(
+        payload,
+        null,
+        2
+      )
+    );
+
+    const response =
+      await this.client.post(
+        "/items/stock-adjustments",
+        payload
+      );
+
+    console.log(
+      "[Petpooja] Stock adjustment created:",
+      response.status
+    );
+
+    return response.data;
+
+  } catch (error) {
+
+    console.error(
+      "[Petpooja] Create stock adjustment failed:",
+      error?.response?.data ||
+      error?.message
+    );
+
+    throw error;
+  }
+}
+
+async updatePurchaseDescription(itemId, description) {
+  await this._ensureAuth();
+
+  // 1. Get latest item
+  const response = await this.client.get(
+    `/items/${itemId}`
+  );
+
+  const item =
+    response.data?.data ||
+    response.data;
+
+  if (!item) {
+    throw new Error("Petpooja item not found");
+  }
+
+  // 2. Build PUT payload with correct types
+  const payload = {
+    alternateUnits: item.alternateUnits || [],
+
+    itemType: item.itemType || "goods",
+
+    itemName: item.itemName || "",
+
+    itemCode: item.itemCode || "",
+
+    // GET gives object, PUT expects string
+    unit:
+      typeof item.unit === "object"
+        ? item.unit?.name || "UNITS"
+        : item.unit || "UNITS",
+
+    // ⭐ ONLY CHANGE
+    description: description,
+
+    barcode: item.barcode || "",
+
+    hsn: item.hsn || "",
+
+    salesMargin: Number(item.salesMargin || 0),
+
+    commission: Number(item.commission || 0),
+
+    commissionType:
+      item.commissionType || "amount",
+
+    brandId: item.brandId,
+
+    notForSale:
+      item.notForSale ?? false,
+
+    sac: item.sac || "",
+
+    openQtyPopup:
+      item.openQtyPopup ?? false,
+
+    openPricePopup:
+      item.openPricePopup ?? false,
+
+    salesAccountId:
+      item.salesAccountId,
+
+    purchaseAccountId:
+      item.purchaseAccountId,
+
+    salesRate:
+      Number(item.salesRate || 0),
+
+    purchaseRate:
+      Number(item.purchaseRate || 0),
+
+    mrp:
+      Number(item.mrp || 0),
+
+    discountPercentage:
+      Number(item.discountPercentage || 0),
+
+    discountAmount:
+      Number(item.discountAmount || 0),
+
+    gstType:
+      item.gstType || "taxable",
+
+    interGstTaxId:
+      item.interGstTaxId,
+
+    intraGstTaxId:
+      item.intraGstTaxId,
+
+    // Build batch details
+    batchDetails:
+      item.batches?.[0]
+        ? {
+            batchNumber:
+              item.batches[0].batchNumber || "Primary",
+
+            manufacturingDate:
+              item.batches[0].manufacturingDate,
+
+            expiryDate:
+              item.batches[0].expiryDate,
+
+            purchasePrice:
+              Number(
+                item.batches[0].purchasePrice ??
+                item.purchaseRate ??
+                0
+              ),
+
+            salesPrice:
+              Number(
+                item.batches[0].salesPrice ??
+                item.salesRate ??
+                0
+              ),
+
+            mrp:
+              Number(
+                item.batches[0].mrp ??
+                item.mrp ??
+                0
+              )
+          }
+: {
+  batchNumber: "Primary",
+  manufacturingDate: "",
+  expiryDate: "",
+  purchasePrice: Number(item.purchaseRate || 0),
+  salesPrice: Number(item.salesRate || 0),
+  mrp: Number(item.mrp || 0)
+},
+
+    isTrackable:
+      item.isTrackable ?? false,
+
+    openingStockQty:
+      Number(item.openingStockQty || 0),
+
+    openingStockRatePerUnit:
+      Number(
+        item.openingStockRatePerUnit ||
+        item.purchaseRate ||
+        0
+      ),
+
+    openingStockDate:
+      item.openingStockDate,
+
+    minimumStock:
+      Number(item.minimumStock || 0),
+
+    parStock:
+      Number(item.parStock || 0),
+
+    categoryId:
+      item.categoryId,
+
+    groupId:
+      item.groupId,
+
+    itemImage:
+      item.itemImage || "",
+
+    tags:
+      Array.isArray(item.tags)
+        ? item.tags
+        : [],
+
+    // GET returns an object here,
+    // PUT expects array
+    serialNumbers:
+      Array.isArray(item.serialNumbers)
+        ? item.serialNumbers
+        : [],
+
+    trackSerialNumber:
+      item.trackSerialNumber ?? false
+  };
+
+  console.log(
+    "[Petpooja] Updating item:",
+    itemId
+  );
+
+  console.log(
+    "[Petpooja] New description:",
+    description
+  );
+
+  const updateResponse =
+    await this.client.put(
+      `/items/${itemId}`,
+      payload
+    );
+
+  console.log(
+    "[Petpooja] Item description updated successfully"
+  );
+
+  return updateResponse.data;
 }
 
 // ➕ Create Party
