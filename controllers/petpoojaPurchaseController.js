@@ -1,5 +1,5 @@
 // const petpoojaPurchase =
-//   require("../services/petpoojaPurchaseClient");
+//   require("../services/PetpoojaPurchaseClient");
 
 // const purchaseMapper =
 //   require("../services/purchaseMapperService");
@@ -580,7 +580,7 @@
 // };
 
 const petpoojaPurchase =
-  require("../services/petpoojaPurchaseClient");
+  require("../services/PetpoojaPurchaseClient");
 
 const purchaseMapper =
   require("../services/purchaseMapperService");
