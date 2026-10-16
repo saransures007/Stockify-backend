@@ -89,48 +89,48 @@ class SearchService {
     return similarity;
   }
   
-  // Search in Petpooja items (from your existing service)
-  async searchPetpoojaItems(searchTerm) {
-    try {
-      const petpooja = require('./petpoojaService');
-      const result = await petpooja.searchItems({ name: searchTerm });
+  // // Search in Petpooja items (from your existing service)
+  // async searchPetpoojaItems(searchTerm) {
+  //   try {
+  //     const petpooja = require('./petpoojaService');
+  //     const result = await petpooja.searchItems({ name: searchTerm });
       
-      if (result && result.data) {
-        return result.data.map(item => ({
-          id: item.id,
-          name: item.itemName,
-          source: 'petpooja',
-          matchScore: this.calculateMatchScore(searchTerm, item.itemName)
-        }));
-      }
-      return [];
-    } catch (error) {
-      console.error('Error searching Petpooja:', error);
-      return [];
-    }
-  }
+  //     if (result && result.data) {
+  //       return result.data.map(item => ({
+  //         id: item.id,
+  //         name: item.itemName,
+  //         source: 'petpooja',
+  //         matchScore: this.calculateMatchScore(searchTerm, item.itemName)
+  //       }));
+  //     }
+  //     return [];
+  //   } catch (error) {
+  //     console.error('Error searching Petpooja:', error);
+  //     return [];
+  //   }
+  // }
   
-  // Search in product requests
-  async searchProductRequests(searchTerm) {
-    const requests = await ProductRequest.find({
-      status: { $ne: 'rejected' }
-    }).sort({ voteCount: -1 });
+  // // Search in product requests
+  // async searchProductRequests(searchTerm) {
+  //   const requests = await ProductRequest.find({
+  //     status: { $ne: 'rejected' }
+  //   }).sort({ voteCount: -1 });
     
-    const results = requests.map(request => ({
-      id: request._id,
-      name: request.originalName,
-      source: 'request',
-      voteCount: request.voteCount,
-      status: request.status,
-      matchScore: this.calculateMatchScore(searchTerm, request.originalName),
-      productName: request.productName
-    }));
+  //   const results = requests.map(request => ({
+  //     id: request._id,
+  //     name: request.originalName,
+  //     source: 'request',
+  //     voteCount: request.voteCount,
+  //     status: request.status,
+  //     matchScore: this.calculateMatchScore(searchTerm, request.originalName),
+  //     productName: request.productName
+  //   }));
     
-    // Filter and sort by match score
-    return results
-      .filter(r => r.matchScore > 30)
-      .sort((a, b) => b.matchScore - a.matchScore);
-  }
+  //   // Filter and sort by match score
+  //   return results
+  //     .filter(r => r.matchScore > 30)
+  //     .sort((a, b) => b.matchScore - a.matchScore);
+  // }
   
   // Combined search with fuzzy fallback
   async smartSearch(searchTerm, options = {}) {

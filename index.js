@@ -61,6 +61,9 @@ const petpoojaRoutes = require('./routes/petpoojaRoutes');
 const commonRoutes = require('./routes/commonRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const productRequestRoutes =  require('./routes/productRequestRoutes');
+const petpoojaPurchaseRoutes =
+  require("./routes/petpoojaPurchaseRoutes");
+
 // Middleware
 app.use(helmet());
 app.use(express.json({ limit: "1mb" }));
@@ -180,6 +183,10 @@ app.use('/api/common', commonRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/product-request', productRequestRoutes);
 
+app.use(
+  "/api/petpooja",
+  petpoojaPurchaseRoutes
+);
 
 // Add after other routes
 app.use('/api/products', productCatalogRoutes);

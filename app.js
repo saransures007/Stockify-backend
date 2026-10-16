@@ -31,6 +31,7 @@ const csvImportRoutes = require('./routes/csvImportRoutes');
 
 // Add CSV import routes
 app.use('/api/csv-import', csvImportRoutes);
+app.use("/api/purchases", require('./routes/purchaseRoutes'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
